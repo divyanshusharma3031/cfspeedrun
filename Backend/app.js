@@ -274,6 +274,10 @@ app.get("/getquestions", async (req, res) => {
   };
   res.status(200).json(dk);
 });
+if(process.env.NODE_ENV==="production")
+{
+  app.use(express.static("client"));
+}
 app.listen(port, () => {
   console.log(`API at http://localhost:${port}`);
 });
