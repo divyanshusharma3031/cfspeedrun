@@ -8,6 +8,7 @@ import loading from "./loading.gif";
 import "./gif.css";
 function Questions() {
   let response = [];
+  let copyres=response;
   const [user, setuser] = useState("");
   const [name, setname] = useState("");
   const [rating, setrating] = useState("");

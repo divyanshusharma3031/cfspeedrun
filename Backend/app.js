@@ -4,13 +4,11 @@ const api = require("../Backend/server/api");
 const app = express();
 const cors = require("cors");
 app.use(cors());
-const port = 4000;
+const port = process.env.PORT||4000;
 const path = require("path");
 app.use(express.json());
 app.use("/api", api);
-// app.use(express.json());
 app.use(express.static(path.join(__dirname, "build")));
-
 app.post("/getuser", async (req, res) => {
   let data = await fetch(
     `https://codeforces.com/api/user.info?handles=${req.body.id}`
