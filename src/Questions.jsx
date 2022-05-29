@@ -14,7 +14,7 @@ function Questions() {
   const [rating, setrating] = useState("");
   const [link, setlink] = useState("");
   const userdata = async (user) => {
-    let u = await fetch("http://localhost:4000/getuser", {
+    let u = await fetch(`${process.env.API_URL}/getuser`, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
       // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
@@ -28,7 +28,7 @@ function Questions() {
     return u;
   };
   const finduser = async (user) => {
-    let data = await fetch(`http://localhost:4000/solvedquestions`, {
+    let data = await fetch(`${process.env.API_URL}/solvedquestions`, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
       cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
@@ -589,7 +589,7 @@ function Questions() {
   const getQuestions = async () => {
     let id = document.getElementById("spinner");
     // id.style.display = "block";
-    let res = await fetch(`http://localhost:4000/getquestions`, {
+    let res = await fetch(`${process.env.API_URL}/getquestions`, {
       method: "GET",
       mode: "cors",
       cache: "no-cache",
