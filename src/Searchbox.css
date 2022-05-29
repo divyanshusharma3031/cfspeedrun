@@ -1,0 +1,27 @@
+
+#form1{
+    position: relative;
+    top:6rem;
+    display:flex;
+    justify-content: center;
+}
+#search1{
+    position: relative;
+    display: inline;
+    height: 2.5rem;
+    width:25rem;
+    border-radius: 7px;
+    padding:2px 10px;
+    font-size: 18px;
+    font-family: 'Roboto', sans-serif;
+}
+#searchicon{
+    font-size: 2rem;
+    color:orange;
+}
+#labelsearch{
+    margin-left: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
