@@ -14,31 +14,17 @@ function Questions() {
   const [rating, setrating] = useState("");
   const [link, setlink] = useState("");
   const userdata = async (user) => {
-    let u = await fetch(`/getuser`, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, *cors, same-origin
-      // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, *same-origin, omit
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id: user }),
-    });
-    u = await u.json();
-    return u;
+    let data = await fetch(
+      `https://codeforces.com/api/user.info?handles=${user}`
+    );
+    data = await data.json();
+    return data;
   };
   const finduser = async (user) => {
-    let data = await fetch(`/solvedquestions`, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, *cors, same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, *same-origin, omit
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id: user }),
-    });
-    data = await data.json();
+    let solvedquestion = await fetch(
+      ` https://codeforces.com/api/user.status?handle=${user}`
+    );
+    let data = await solvedquestion.json();
     return data;
   };
   const onchange = async (e) => {
@@ -588,17 +574,246 @@ function Questions() {
   };
   const getQuestions = async () => {
     let id = document.getElementById("spinner");
-    // id.style.display = "block";
-    let res = await fetch(`/getquestions`, {
-      method: "GET",
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
+    let questions = await fetch(
+      "https://codeforces.com/api/problemset.problems?tags=implementation"
+    );
+    questions = await questions.json();
+    let q800 = [];
+    let q900 = [];
+    let q1000 = [];
+    let q1100 = [];
+    let q1200 = [];
+    let q1300 = [];
+    let q1400 = [];
+    let q1500 = [];
+    let q1600 = [];
+    let q1700 = [];
+    let q1800 = [];
+    let q1900 = [];
+    let q2000 = [];
+    let problems = questions.result.problems;
+    let stats = questions.result.problemStatistics;
+    problems.forEach((element, index) => {
+      let temp = {
+        name: element.name,
+        tags: element.tags,
+        submissions: stats[index].solvedCount,
+      };
+      switch (element.rating) {
+        case 800:
+          q800.push(temp);
+          break;
+        case 900:
+          q900.push(temp);
+          break;
+        case 1000:
+          q1000.push(temp);
+          break;
+        case 1100:
+          q1100.push(temp);
+          break;
+        case 1200:
+          q1200.push(temp);
+          break;
+        case 1300:
+          q1300.push(temp);
+          break;
+        case 1400:
+          q1400.push(temp);
+        case 1500:
+          q1500.push(temp);
+          break;
+        case 1600:
+          q1600.push(temp);
+          break;
+        case 1700:
+          q1700.push(temp);
+          break;
+        case 1800:
+          q1800.push(temp);
+          break;
+        case 1900:
+          q1900.push(temp);
+          break;
+        case 2000:
+          q2000.push(temp);
+          break;
+        default:
+          break;
+      }
     });
-    res = await res.json();
+    // q1800.forEach((element)=>{
+    //     console.log(element);
+    // })
+    // console.log(questions);
+    q800.sort(function (a, b) {
+      const lastperson = a.submissions;
+      const nextperson = b.submissions;
+      if (lastperson > nextperson) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+    q900.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1000.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1100.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1200.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1300.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1400.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1500.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1600.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1700.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1800.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1900.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q2000.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    const res = {
+      q800,
+      q900,
+      q1000,
+      q1100,
+      q1200,
+      q1300,
+      q1400,
+      q1500,
+      q1600,
+      q1700,
+      q1800,
+      q1900,
+      q2000,
+    };
     let c = 0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
