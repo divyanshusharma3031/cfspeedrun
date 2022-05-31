@@ -7,71 +7,63 @@ import "./options.css";
 import loading from "./loading.gif";
 import "./gif.css";
 function Questions() {
-  let copyres;
-  let response;
+  let response = [];
+  let copyres=response;
   const [user, setuser] = useState("");
   const [name, setname] = useState("");
   const [rating, setrating] = useState("");
   const [link, setlink] = useState("");
   const userdata = async (user) => {
-    let u = await fetch("http://localhost:4000/getuser", {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, *cors, same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, *same-origin, omit
-      headers: {
-        "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: JSON.stringify({ id: user }),
-    });
-    u = await u.json();
-    return u;
-  };
-  const finduser = async (user) => {
-    let data = await fetch(`http://localhost:4000/solvedquestions`, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, *cors, same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, *same-origin, omit
-      headers: {
-        "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: JSON.stringify({ id: user }),
-    });
+    let data = await fetch(
+      `https://codeforces.com/api/user.info?handles=${user}`
+    );
     data = await data.json();
     return data;
   };
-  const onchange = (e) => {
+  const finduser = async (user) => {
+    let solvedquestion = await fetch(
+      ` https://codeforces.com/api/user.status?handle=${user}`
+    );
+    let data = await solvedquestion.json();
+    return data;
+  };
+  const onchange = async (e) => {
+    // console.log(response);
     setuser(e.target.value);
   };
   const onclick = async (e) => {
+    response = await getQuestions();
     console.log("working");
-    const a = await finduser(user);
+    // const a = await finduser(user);
     const Userdata = await userdata(user);
-    const ibox=document.getElementById("invisible");
-    ibox.style.display="flex";
+    const ibox = document.getElementById("invisible");
+    ibox.style.display = "flex";
     setname(user);
     setrating(Userdata.result[0].maxRating);
-   console.log(Userdata.result[0]);
+    console.log(Userdata.result[0]);
     setlink(Userdata.result[0].avatar);
-    setcolor(a);
+    setcolor(user);
     e.preventDefault();
   };
-  
+
   const setcolor = async (user) => {
-    let arr = user.result;
+    console.log(user);
+    const a = await finduser(user);
+    let arr = a.result;
+    // console.log(arr);
     let solved = [];
     for (let i = 0; i <= 15; i++) {
       let div = document.getElementById(`${i}${1}`);
       solved.push(div.innerHTML);
     }
-    arr.forEach((element) => {
-      for (let i = 1; i <= 15; i++) {
+    for(let i=0;i<=15;i++)
+    {
+      let div = document.getElementById(`${i}${1}`).parentElement;
+      let bo=true;
+      arr.forEach((element)=>{
         if (element.problem.name === solved[i]) {
-          let div = document.getElementById(`${i}${1}`).parentElement;
           if (element.verdict === "OK") {
+            bo=false;
             div.style.backgroundColor = "#29fd53";
             div.style.color = "white";
           } else if (
@@ -81,10 +73,13 @@ function Questions() {
             div.style.backgroundColor = "red";
           }
         }
+      })
+      if(bo)
+      {
+        div.style.backgroundColor = "white";
+        div.style.color = "black";
       }
-    });
-    response=copyres;
-    console.log(response);
+    }
   };
   useEffect(async () => {
     const spinner = document.getElementById("spinner");
@@ -92,7 +87,8 @@ function Questions() {
     inner.style.display = "none";
     spinner.style.display = "block";
     response = await getQuestions();
-    copyres=response;
+    console.log(response);
+    copyres = response;
     spinner.style.display = "none";
     inner.style.display = "block";
   }, []);
@@ -128,10 +124,14 @@ function Questions() {
       tags.innerHTML = s;
       c++;
     }
-    // id.style.display = "none";
     console.log(response);
   };
-  const onclick900 = () => {
+  const onclick900 = async () => {
+    const spinner = document.getElementById("spinner");
+    const inner = document.getElementById("innercontainer");
+    inner.style.display = "none";
+    spinner.style.display = "block";
+    response = await getQuestions();
     let c = 0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
@@ -146,26 +146,30 @@ function Questions() {
       let tags = document.getElementById(`${i}${4}`);
       response.q900[c].tags.forEach((element, index) => {
         s += element[0].toUpperCase() + element.substring(1);
-        if (index === response.q800[c].tags.length - 1) {
+        if (index === response.q900[c].tags.length - 1) {
         } else {
           s += ", ";
         }
       });
-      if(user==="")
-      {
-
-      }
-      else
-      {
-        setcolor(user)
+      if (user === "") {
+      } else {
+        // console.log(user);
+        setcolor(user);
       }
       tags.innerHTML = s;
       c++;
     }
+    spinner.style.display = "none";
+    inner.style.display = "block";
     // id.style.display = "none";
     console.log(response);
   };
-  const onclick1000 = () => {
+  const onclick1000 = async() => {
+    const spinner = document.getElementById("spinner");
+    const inner = document.getElementById("innercontainer");
+    inner.style.display = "none";
+    spinner.style.display = "block";
+    response = await getQuestions();
     let c = 0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
@@ -180,18 +184,30 @@ function Questions() {
       let tags = document.getElementById(`${i}${4}`);
       response.q1000[c].tags.forEach((element, index) => {
         s += element[0].toUpperCase() + element.substring(1);
-        if (index === response.q1100[c].tags.length - 1) {
+        if (index === response.q1000[c].tags.length - 1) {
         } else {
           s += ", ";
         }
       });
+      if (user === "") {
+      } else {
+        // console.log(user);
+        setcolor(user);
+      }
       tags.innerHTML = s;
       c++;
     }
+    spinner.style.display = "none";
+    inner.style.display = "block";
     // id.style.display = "none";
     console.log(response);
   };
-  const onclick1100 = () => {
+  const onclick1100 = async () => {
+    const spinner = document.getElementById("spinner");
+    const inner = document.getElementById("innercontainer");
+    inner.style.display = "none";
+    spinner.style.display = "block";
+    response = await getQuestions();
     let c = 0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
@@ -201,24 +217,36 @@ function Questions() {
       let rating = document.getElementById(`${i}${3}`);
       rating.innerHTML = 1100;
       let frequency = document.getElementById(`${i}${2}`);
-      frequency.innerHTML = `${response.q900[c].submissions}`;
+      frequency.innerHTML = `${response.q1100[c].submissions}`;
       let s = "";
       let tags = document.getElementById(`${i}${4}`);
       response.q900[c].tags.forEach((element, index) => {
         s += element[0].toUpperCase() + element.substring(1);
-        if (index === response.q800[c].tags.length - 1) {
+        if (index === response.q1100[c].tags.length - 1) {
         } else {
           s += ", ";
         }
       });
+      if (user === "") {
+      } else {
+        // console.log(user);
+        setcolor(user);
+      }
       tags.innerHTML = s;
       c++;
     }
+    spinner.style.display = "none";
+    inner.style.display = "block";
     // id.style.display = "none";
     console.log(response);
   };
-  const onclick1200 = () => {
-    let c = 0;
+  const onclick1200 =async () => {
+    const spinner = document.getElementById("spinner");
+    const inner = document.getElementById("innercontainer");
+    inner.style.display = "none";
+    spinner.style.display = "block";
+    response = await getQuestions();
+    let c=0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
       idx.innerHTML = i;
@@ -237,19 +265,29 @@ function Questions() {
           s += ", ";
         }
       });
+      if (user === "") {
+      } else {
+        setcolor(user);
+      }
       tags.innerHTML = s;
       c++;
     }
-    // id.style.display = "none";
+    spinner.style.display = "none";
+    inner.style.display = "block";
     console.log(response);
   };
-  const onclick1300 = () => {
+  const onclick1300 =async () => {
+    const spinner = document.getElementById("spinner");
+    const inner = document.getElementById("innercontainer");
+    inner.style.display = "none";
+    spinner.style.display = "block";
+    response = await getQuestions();
     let c = 0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
       idx.innerHTML = i;
       let name = document.getElementById(`${i}${1}`);
-      name.innerHTML = `${response.q900[c].name}`;
+      name.innerHTML = `${response.q1300[c].name}`;
       let rating = document.getElementById(`${i}${3}`);
       rating.innerHTML = 1300;
       let frequency = document.getElementById(`${i}${2}`);
@@ -263,13 +301,24 @@ function Questions() {
           s += ", ";
         }
       });
+      if (user === "") {
+      } else {
+        setcolor(user);
+      }
       tags.innerHTML = s;
       c++;
     }
     // id.style.display = "none";
+    spinner.style.display = "none";
+    inner.style.display = "block";
     console.log(response);
   };
-  const onclick1400 = () => {
+  const onclick1400 = async() => {
+    const spinner = document.getElementById("spinner");
+    const inner = document.getElementById("innercontainer");
+    inner.style.display = "none";
+    spinner.style.display = "block";
+    response = await getQuestions();
     let c = 0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
@@ -289,13 +338,24 @@ function Questions() {
           s += ", ";
         }
       });
+      if (user === "") {
+      } else {
+        setcolor(user);
+      }
       tags.innerHTML = s;
       c++;
     }
     // id.style.display = "none";
+    spinner.style.display = "none";
+    inner.style.display = "block";
     console.log(response);
   };
-  const onclick1500 = () => {
+  const onclick1500 = async () => {
+    const spinner = document.getElementById("spinner");
+    const inner = document.getElementById("innercontainer");
+    inner.style.display = "none";
+    spinner.style.display = "block";
+    response = await getQuestions();
     let c = 0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
@@ -315,13 +375,24 @@ function Questions() {
           s += ", ";
         }
       });
+      if (user === "") {
+      } else {
+        setcolor(user);
+      }
       tags.innerHTML = s;
       c++;
     }
+    spinner.style.display = "none";
+    inner.style.display = "block";
     // id.style.display = "none";
     console.log(response);
   };
-  const onclick1600 = () => {
+  const onclick1600 = async() => {
+    const spinner = document.getElementById("spinner");
+    const inner = document.getElementById("innercontainer");
+    inner.style.display = "none";
+    spinner.style.display = "block";
+    response = await getQuestions();
     let c = 0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
@@ -341,13 +412,24 @@ function Questions() {
           s += ", ";
         }
       });
+      if (user === "") {
+      } else {
+        setcolor(user);
+      }
       tags.innerHTML = s;
       c++;
     }
+    spinner.style.display = "none";
+    inner.style.display = "block";
     // id.style.display = "none";
     console.log(response);
   };
-  const onclick1700 = () => {
+  const onclick1700 =async () => {
+    const spinner = document.getElementById("spinner");
+    const inner = document.getElementById("innercontainer");
+    inner.style.display = "none";
+    spinner.style.display = "block";
+    response = await getQuestions();
     let c = 0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
@@ -367,13 +449,24 @@ function Questions() {
           s += ", ";
         }
       });
+      if (user === "") {
+      } else {
+        setcolor(user);
+      }
       tags.innerHTML = s;
       c++;
     }
+    spinner.style.display = "none";
+    inner.style.display = "block";
     // id.style.display = "none";
     console.log(response);
   };
-  const onclick1800 = () => {
+  const onclick1800 = async () => {
+    const spinner = document.getElementById("spinner");
+    const inner = document.getElementById("innercontainer");
+    inner.style.display = "none";
+    spinner.style.display = "block";
+    response = await getQuestions();
     let c = 0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
@@ -393,13 +486,24 @@ function Questions() {
           s += ", ";
         }
       });
+      if (user === "") {
+      } else {
+        setcolor(user);
+      }
       tags.innerHTML = s;
       c++;
     }
+    spinner.style.display = "none";
+    inner.style.display = "block";
     // id.style.display = "none";
     console.log(response);
   };
-  const onclick1900 = () => {
+  const onclick1900 = async() => {
+    const spinner = document.getElementById("spinner");
+    const inner = document.getElementById("innercontainer");
+    inner.style.display = "none";
+    spinner.style.display = "block";
+    response = await getQuestions();
     let c = 0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
@@ -419,13 +523,24 @@ function Questions() {
           s += ", ";
         }
       });
+      if (user === "") {
+      } else {
+        setcolor(user);
+      }
       tags.innerHTML = s;
       c++;
     }
+    spinner.style.display = "none";
+    inner.style.display = "block";
     // id.style.display = "none";
     console.log(response);
   };
-  const onclick2000 = () => {
+  const onclick2000 = async() => {
+    const spinner = document.getElementById("spinner");
+    const inner = document.getElementById("innercontainer");
+    inner.style.display = "none";
+    spinner.style.display = "block";
+    response = await getQuestions();
     let c = 0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
@@ -445,42 +560,276 @@ function Questions() {
           s += ", ";
         }
       });
+      if (user === "") {
+      } else {
+        setcolor(user);
+      }
       tags.innerHTML = s;
       c++;
     }
     // id.style.display = "none";
+    spinner.style.display = "none";
+    inner.style.display = "block";
     console.log(response);
   };
   const getQuestions = async () => {
     let id = document.getElementById("spinner");
-    // id.style.display = "block";
-    let response = await fetch(`http://localhost:4000/getquestions`, {
-      method: "GET", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, *cors, same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, *same-origin, omit
-      headers: {
-        "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
+    let questions = await fetch(
+      "https://codeforces.com/api/problemset.problems?tags=implementation"
+    );
+    questions = await questions.json();
+    let q800 = [];
+    let q900 = [];
+    let q1000 = [];
+    let q1100 = [];
+    let q1200 = [];
+    let q1300 = [];
+    let q1400 = [];
+    let q1500 = [];
+    let q1600 = [];
+    let q1700 = [];
+    let q1800 = [];
+    let q1900 = [];
+    let q2000 = [];
+    let problems = questions.result.problems;
+    let stats = questions.result.problemStatistics;
+    problems.forEach((element, index) => {
+      let temp = {
+        name: element.name,
+        tags: element.tags,
+        submissions: stats[index].solvedCount,
+      };
+      switch (element.rating) {
+        case 800:
+          q800.push(temp);
+          break;
+        case 900:
+          q900.push(temp);
+          break;
+        case 1000:
+          q1000.push(temp);
+          break;
+        case 1100:
+          q1100.push(temp);
+          break;
+        case 1200:
+          q1200.push(temp);
+          break;
+        case 1300:
+          q1300.push(temp);
+          break;
+        case 1400:
+          q1400.push(temp);
+        case 1500:
+          q1500.push(temp);
+          break;
+        case 1600:
+          q1600.push(temp);
+          break;
+        case 1700:
+          q1700.push(temp);
+          break;
+        case 1800:
+          q1800.push(temp);
+          break;
+        case 1900:
+          q1900.push(temp);
+          break;
+        case 2000:
+          q2000.push(temp);
+          break;
+        default:
+          break;
+      }
     });
-    response = await response.json();
+    // q1800.forEach((element)=>{
+    //     console.log(element);
+    // })
+    // console.log(questions);
+    q800.sort(function (a, b) {
+      const lastperson = a.submissions;
+      const nextperson = b.submissions;
+      if (lastperson > nextperson) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+    q900.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1000.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1100.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1200.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1300.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1400.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1500.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1600.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1700.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1800.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q1900.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    q2000.sort(function(a,b){
+      const lastperson=a.submissions;
+      const nextperson=b.submissions;
+      if(lastperson>nextperson)
+      {
+        return -1;
+      }
+      else
+      {
+        return 1;
+      }
+    });
+    const res = {
+      q800,
+      q900,
+      q1000,
+      q1100,
+      q1200,
+      q1300,
+      q1400,
+      q1500,
+      q1600,
+      q1700,
+      q1800,
+      q1900,
+      q2000,
+    };
     let c = 0;
     for (let i = 1; i <= 15; i++) {
       let idx = document.getElementById(`${i}${0}`);
       let pita = idx.parentElement;
       idx.innerHTML = i;
       let name = document.getElementById(`${i}${1}`);
-      name.innerHTML = `${response.q800[c].name}`;
+      name.innerHTML = `${res.q800[c].name}`;
       let rating = document.getElementById(`${i}${3}`);
       rating.innerHTML = 800;
       let frequency = document.getElementById(`${i}${2}`);
-      frequency.innerHTML = `${response.q800[c].submissions}`;
+      frequency.innerHTML = `${res.q800[c].submissions}`;
       let s = "";
       let tags = document.getElementById(`${i}${4}`);
-      response.q800[c].tags.forEach((element, index) => {
+      res.q800[c].tags.forEach((element, index) => {
         s += element[0].toUpperCase() + element.substring(1);
-        if (index === response.q800[c].tags.length - 1) {
+        if (index === res.q800[c].tags.length - 1) {
         } else {
           s += ", ";
         }
@@ -489,21 +838,19 @@ function Questions() {
       c++;
     }
     // id.style.display = "none";
-    console.log(response);
-    return response;
+    console.log(res);
+    return res;
   };
   return (
     <>
       <div id="container">
         <div id="divform">
-          <form action="fds.js" id="form1">
+          <form action="submit" id="form1">
             <input
               type="text"
               name="search1"
               id="search1"
               placeholder="Codeforces Handle"
-              onFocus="toggle()"
-              onBlur="toggle1()"
               value={user}
               onChange={onchange}
             />
@@ -523,8 +870,8 @@ function Questions() {
           <div id="two">
             <div id="codename">{name}</div>
             <div id="group">
-            <div id = "rating">Max. Rating: </div>
-            <div id="coderating">{rating}</div>
+              <div id="rating">Max. Rating: </div>
+              <div id="coderating">{rating}</div>
             </div>
           </div>
         </div>
